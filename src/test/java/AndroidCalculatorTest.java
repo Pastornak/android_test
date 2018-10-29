@@ -1,14 +1,9 @@
+import com.epam.lab.android.BO.CalculatorBO;
 import io.appium.java_client.AppiumDriver;
-import io.appium.java_client.MobileElement;
 import io.appium.java_client.android.AndroidDriver;
-import io.appium.java_client.android.AndroidElement;
-import io.appium.java_client.pagefactory.AndroidFindBy;
 import io.appium.java_client.remote.MobileCapabilityType;
 import org.openqa.selenium.By;
-import org.openqa.selenium.WebElement;
 import org.openqa.selenium.remote.DesiredCapabilities;
-import org.openqa.selenium.support.FindBy;
-import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Assert;
 import org.testng.annotations.AfterMethod;
@@ -20,19 +15,6 @@ import java.net.URL;
 import java.util.concurrent.TimeUnit;
 
 public class AndroidCalculatorTest {
-    @AndroidFindBy(xpath = "//*[@class='android.widget.Button' and @text='1']")
-    private AndroidElement oneButton;
-    @AndroidFindBy(xpath = "//*[@class='android.widget.Button' and @text='2']")
-    private AndroidElement twoButton;
-    @AndroidFindBy(xpath = "//*[@class='android.widget.Button' and @text='3']")
-    private AndroidElement threeButton;
-    @AndroidFindBy(xpath = "//*[@class='android.widget.Button' and @text='+']")
-    private AndroidElement plusButton;
-    @AndroidFindBy(xpath = "//*[@class='android.widget.Button' and @text='=']")
-    private AndroidElement equalsButton;
-    @AndroidFindBy(xpath = "//*[@resource-id = 'com.android.calculator2:id/result']")
-    private AndroidElement result;
-
     AppiumDriver driver;
     WebDriverWait wait;
 
@@ -55,18 +37,20 @@ public class AndroidCalculatorTest {
 
     @Test
     public void testCalculator(){
-        //wait.until(ExpectedConditions.visibilityOf(twoButton));
-        //twoButton.click();
         driver.findElement(By.xpath("//*[@class='android.widget.Button' and @text='2']")).click();
-        //plusButton.click();
         driver.findElement(By.xpath("//*[@class='android.widget.Button' and @text='+']")).click();
-        //threeButton.click();
         driver.findElement(By.xpath("//*[@class='android.widget.Button' and @text='3']")).click();
-        //equalsButton.click();
         driver.findElement(By.xpath("//*[@class='android.widget.Button' and @text='=']")).click();
-        //wait.until(ExpectedConditions.visibilityOf(result));
-        //Assert.assertEquals(5, Integer.parseInt(result.getText()));
         Assert.assertEquals(5, Integer.parseInt(driver.findElement(By.xpath("//*[@resource-id = 'com.android.calculator2:id/result']")).getText()));
+    }
+
+    @Test
+    public void testCalculatorWithBO(){
+        CalculatorBO calculator = new CalculatorBO((AndroidDriver) driver);
+        Assert.assertEquals(calculator.typeNumber(10).add(5).divide(3).getResult(), "5");
+        Assert.assertEquals(calculator.typeNumber(3).divide(2).getResult(), "1,5");
+        Assert.assertEquals(calculator.typeNumber(1).multiply(3).multiply(4).getResult(), "12");
+        Assert.assertEquals(calculator.typeNumber(2).multiply(3).subtract(1).divide(2).getResult(), "2,5");
     }
 
     @AfterMethod(alwaysRun = true)
